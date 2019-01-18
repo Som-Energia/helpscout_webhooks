@@ -1,7 +1,17 @@
+import os
 
-from sanic import Sanic
+import yaml
 
-from energetica.labeler import labeler
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+with open(os.path.join(BASE_DIR, 'webhooks/conf/config.yaml')) as f:
+    config = yaml.load(f.read())
+
+
+CLIENT_ID = config['client_id']
+CLIENT_SECRET = config['client_secret']
+
+TOKEN_TIME_REFRESH = 110
 
 LOGGING = {
     'version': 1,
@@ -28,6 +38,11 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
+        'hs_webhook': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
         'sanic': {
             'handlers': ['console'],
             'level': 'INFO',
@@ -35,12 +50,3 @@ LOGGING = {
         }
     }
 }
-
-# logging.config.dictConfig(LOGGING)
-
-app = Sanic(log_config=LOGGING)
-
-app.blueprint(labeler)
-
-if __name__ == "__main__":
-    app.run(host="localhost", port=8000)

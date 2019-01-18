@@ -11,6 +11,11 @@ ipython = "*"
 sanic = "*"
 gunicorn = "*"
 aiohttp = "*"
+psycopg2 = "*"
+aiojobs = "*"
+asyncio = "*"
+apscheduler = "*"
+pyyaml = "*"
 
 [requires]
 python_version = "3.6"
