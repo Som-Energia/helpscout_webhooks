@@ -8,10 +8,24 @@ with open(os.path.join(BASE_DIR, 'webhooks/conf/config.yaml')) as f:
     config = yaml.load(f.read())
 
 
-CLIENT_ID = config['client_id']
-CLIENT_SECRET = config['client_secret']
+HELPSCOUT_HOST = 'https://api.helpscout.net'
 
-TOKEN_TIME_REFRESH = 110
+CLIENT_ID = config['helpscout']['client_id']
+CLIENT_SECRET = config['helpscout']['client_secret']
+
+
+SECRET_KEY = config['helpscout']['secret_key']
+
+DATABASE = {
+    'database': config['database']['name'],
+    'host': config['database']['host'],
+    'port': config['database']['port'],
+    'user': config['database']['user'],
+    'password': config['database']['password']
+}
+
+
+TOKEN_TIME_REFRESH = 2
 
 LOGGING = {
     'version': 1,
@@ -45,8 +59,9 @@ LOGGING = {
         },
         'sanic': {
             'handlers': ['console'],
-            'level': 'INFO',
+            'level': 'DEBUG',
             'propagate': True,
-        }
+        },
+
     }
 }

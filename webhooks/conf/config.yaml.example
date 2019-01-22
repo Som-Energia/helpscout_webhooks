@@ -1,0 +1,13 @@
+# Helpscout api credentials and webhook screet key
+helpscout:
+  client_id: kaka
+  client_secret: koko
+  secret_key: ertyu789ç%$
+
+# Database configuration
+database:
+  name: db_name
+  host: db_host
+  port: db_port
+  user: db_user
+  password: db_password

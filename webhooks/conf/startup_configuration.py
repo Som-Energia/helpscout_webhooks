@@ -1,4 +1,5 @@
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.schedulers.background import BackgroundScheduler
 from sanic import Sanic
 
 from webhooks.energetica.labeler import labeler
@@ -14,9 +15,9 @@ async def build_app():
     scheduler = AsyncIOScheduler()
 
     scheduler.add_job(
-        TokenRenew().renew_token,
+        TokenRenew.renew_token,
         'interval',
-        minutes=settings.TOKEN_TIME_REFRESH,
+        seconds=settings.TOKEN_TIME_REFRESH,
         max_instances=1
     )
 

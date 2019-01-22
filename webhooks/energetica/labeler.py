@@ -1,38 +1,49 @@
-import aiohttp
+import base64
+import hmac
 import logging
-import os
-import psycopg2
 
 from sanic import Blueprint
-from sanic.response import json
+from sanic import response
 
-import dbconfig as config
+from ..lib.hs_api import HelpscoutSDK
+from ..lib.utils import dbUtils
 
-logger = logging.getLogger(__name__)
+from webhooks.conf import settings
+
+
+logger = logging.getLogger('energetica')
 
 labeler = Blueprint("energetica_labeler", url_prefix="/energetica_labeler")
 
-
-def relative(path):
-    return os.path.abspath(os.path.join(os.path.dirname(__file__), path))
+db = dbUtils()
 
 
-db = psycopg2.connect(**config.psycopg)
-fd = open(relative('energetica_emails.sql'), 'r')
-query = fd.read()
+@labeler.middleware('request')
+async def check_signature(request):
+
+    request_signature = base64.encodebytes(hmac.new(
+        settings.SECRET_KEY.encode(),
+        request.body,
+        'sha1'
+    ).digest()).strip().decode()
+
+    hs_signature = request.headers['x-helpscout-signature']
+
+    if request_signature != hs_signature:
+        return response.json({'error': 'Unauthorized'}, status=401)
 
 
-@labeler.route("/")
+@labeler.route("/", methods=['POST'])
 async def labelhook(request):
+    hsApi = HelpscoutSDK()
 
-    with db.cursor() as cursor:
-        cursor.execute(query)
-        rows = cursor.fetchall()
+    body = request.json
+    if body['createdBy']['email'] in db.energeticaMails():
+        # Patch method
+        logger.debug('-' * 10 + 'ENERGETICA' + '-' * 10)
+        mailbox_id = await hsApi.get_mailbox('GDPR')
+        logger.debug(mailbox_id)
 
-    async with aiohttp.ClientSession() as session:
-        async with session.get('https://aiohttp.readthedocs.io/en/stable/client_quickstart.html') as resp:
-            print(resp.status)
-            print(rows)
-            helpscoutResponse = await resp.text()
-    logger.debug(request.json)
-    return json(helpscoutResponse, status=200)
+    logger.debug('yujuuuuu')
+
+    return response.json({}, status=200)
