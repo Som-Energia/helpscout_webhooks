@@ -24,8 +24,11 @@ DATABASE = {
     'password': config['database']['password']
 }
 
+SQL = {
+    'energetica_emails': config['sql']['energetica_emails']
+}
 
-TOKEN_TIME_REFRESH = 2
+TOKEN_TIME_REFRESH = 110
 
 LOGGING = {
     'version': 1,

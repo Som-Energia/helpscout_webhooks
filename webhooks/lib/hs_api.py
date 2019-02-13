@@ -1,4 +1,5 @@
 import logging
+import ujson
 from urllib.request import urljoin
 
 import aiohttp
@@ -13,16 +14,14 @@ logger = logging.getLogger('hs_api')
 class HelpscoutAPI(object):
 
     endpoints = {
-        'mailboxes': '/v2/mailboxes'
+        'token': '/v2/oauth2/token',
+        'mailboxes': '/v2/mailboxes',
+        'change_mailbox': '/v2/conversations'
     }
 
     def __init__(self, host):
         self.host = host
-        self.token_renew = TokenRenew()
-
-    def change_mailbox(self, conversationId, mailboxId):
-        # Patch request
-        pass
+        self.token_renew = TokenRenew(urljoin(self.host, self.endpoints['token']))
 
     async def mailboxes(self):
         headers = {

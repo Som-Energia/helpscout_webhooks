@@ -13,13 +13,15 @@ def main(host, port):
     loop = asyncio.get_event_loop()
 
     try:
-        app, scheduler = loop.run_until_complete(build_app())
+        app = loop.run_until_complete(build_app(loop))
 
         logger.info("Running background tasks... ")
-        scheduler.start()
+        app.scheduler.start()
 
         logger.info("Running helpscout webhooks... ")
-        app.run(host, port)
+        server = app.create_server(host, port)
+        task = loop.create_task(server)
+        loop.run_forever()
     except (KeyboardInterrupt, SystemExit):
         logger.info("You kill me!!")
     except Exception as e:
@@ -27,7 +29,8 @@ def main(host, port):
         logger.exception(msg, str(e))
     finally:
         logger.info("Stopping helpscout webhooks :(")
-        scheduler.shutdown()
+        task.cancel()
+        app.scheduler.shutdown()
         loop.close()
         sys.exit(0)
 

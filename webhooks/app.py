@@ -9,10 +9,10 @@ logger = logging.getLogger('hs_webhook')
 
 def start_app():
     loop = asyncio.get_event_loop()
-    app, scheduler = loop.run_until_complete(build_app())
+    app = loop.run_until_complete(build_app(loop))
 
     logger.info("Running background tasks... ")
-    scheduler.start()
+    app.scheduler.start()
 
     return app
 
