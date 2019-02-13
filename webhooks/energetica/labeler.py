@@ -5,9 +5,6 @@ import logging
 from sanic import Blueprint
 from sanic import response
 
-from ..lib.hs_api import HelpscoutSDK
-from ..lib.utils import dbUtils
-
 from webhooks.conf import settings
 
 

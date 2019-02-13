@@ -32,12 +32,14 @@ class TokenRenew(object):
     async def renew_token(self):
         try:
             async with aiohttp.ClientSession() as session:
-                async with session.post(self.url, headers=self.headers, data=ujson.dumps(self.body)) as resp:
+                async with session.post(
+                    self.url, headers=self.headers, data=ujson.dumps(self.body)
+                ) as resp:
                     body = await resp.json()
                     self.token = body['access_token']
         except aiohttp.ClientConnectionError as e:
             msg = 'Error making request %s. Reason: %s'
-            logger.error(msg, url, str(e))
+            logger.error(msg, self.url, str(e))
 
 
 class dbUtils(object):

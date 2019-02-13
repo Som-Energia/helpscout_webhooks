@@ -1,12 +1,12 @@
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from apscheduler.schedulers.background import BackgroundScheduler
 from datetime import datetime
 from sanic import Sanic
 
 from webhooks.energetica.labeler import labeler
-from webhooks.lib.utils import TokenRenew, dbUtils
+from webhooks.lib.utils import dbUtils
 
 from ..lib.hs_api import HelpscoutSDK
+
 
 async def build_app(loop):
     import webhooks.conf.settings as settings

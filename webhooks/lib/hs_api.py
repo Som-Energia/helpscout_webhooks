@@ -21,7 +21,9 @@ class HelpscoutAPI(object):
 
     def __init__(self, host):
         self.host = host
-        self.token_renew = TokenRenew(urljoin(self.host, self.endpoints['token']))
+        self.token_renew = TokenRenew(
+            urljoin(self.host, self.endpoints['token'])
+        )
 
     async def mailboxes(self):
         headers = {
@@ -32,7 +34,8 @@ class HelpscoutAPI(object):
         try:
             async with aiohttp.ClientSession(raise_for_status=True) as session:
                 async with session.get(url, headers=headers) as resp:
-                    return (await resp.json()).get('_embedded', {}).get('mailboxes', [])
+                    body = await resp.json()
+                    return body.get('_embedded', {}).get('mailboxes', [])
         except aiohttp.ClientConnectionError as e:
             msg = 'Error making request %s. Reason: %s'
             logger.error(msg, url, str(e))
@@ -44,22 +47,22 @@ class HelpscoutAPI(object):
         }
 
         url = ''.join([
-                        self.host,
-                        self.endpoints['change_mailbox'],
-                        '/',
-                        str(conversation_id)
-                ])
+            self.host,
+            self.endpoints['change_mailbox'],
+            '/',
+            str(conversation_id)
+        ])
 
         body = {'op': 'move', 'path': '/mailboxId', 'value': mailbox_id}
 
         try:
-            async with aiohttp.ClientSession() as session:
-                async with session.patch(url, headers=headers, data=ujson.dumps(body)) as resp:
-                    pass
+            async with aiohttp.ClientSession(raise_for_status=True) as session:
+                await session.patch(
+                    url, headers=headers, data=ujson.dumps(body)
+                )
         except aiohttp.ClientConnectionError as e:
             msg = 'Error making request %s. Reason: %s'
             logger.error(msg, url, str(e))
-
 
 
 class HelpscoutSDK(object):
