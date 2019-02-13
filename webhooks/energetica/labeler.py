@@ -15,8 +15,6 @@ logger = logging.getLogger('energetica')
 
 labeler = Blueprint("energetica_labeler", url_prefix="/energetica_labeler")
 
-db = dbUtils()
-
 
 @labeler.middleware('request')
 async def check_signature(request):
@@ -35,15 +33,12 @@ async def check_signature(request):
 
 @labeler.route("/", methods=['POST'])
 async def labelhook(request):
-    hsApi = HelpscoutSDK()
+    hsApi = request.app.hsApi
 
     body = request.json
-    if body['createdBy']['email'] in db.energeticaMails():
-        # Patch method
-        logger.debug('-' * 10 + 'ENERGETICA' + '-' * 10)
-        mailbox_id = await hsApi.get_mailbox('GDPR')
-        logger.debug(mailbox_id)
-
-    logger.debug('yujuuuuu')
+    energetica_emails = request.app.dbUtils.get_energetica_emails()
+    if body['customer']['email'] in energetica_emails:
+        mailbox_id = await hsApi.get_mailbox('Energética Coop')
+        await hsApi.change_mailbox(body['id'], mailbox_id['id'])
 
     return response.json({}, status=200)
