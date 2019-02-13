@@ -6,7 +6,7 @@ verify_ssl = true
 [dev-packages]
 flake8 = "*"
 ipython = "*"
-unittest = "*"
+vcrpy-unittest = "*"
 
 [packages]
 sanic = "*"
@@ -17,7 +17,6 @@ aiojobs = "*"
 asyncio = "*"
 apscheduler = "*"
 pyyaml = "*"
-vcrpy-unittest = "*"
 
 [requires]
 python_version = "3.6"
