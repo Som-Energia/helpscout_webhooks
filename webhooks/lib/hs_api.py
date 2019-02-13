@@ -37,6 +37,30 @@ class HelpscoutAPI(object):
             msg = 'Error making request %s. Reason: %s'
             logger.error(msg, url, str(e))
 
+    async def change_mailbox(self, conversation_id, mailbox_id):
+        headers = {
+            'Authorization': 'bearer {}'.format(self.token_renew.token),
+            'Content-type': 'application/json'
+        }
+
+        url = ''.join([
+                        self.host,
+                        self.endpoints['change_mailbox'],
+                        '/',
+                        str(conversation_id)
+                ])
+
+        body = {'op': 'move', 'path': '/mailboxId', 'value': mailbox_id}
+
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.patch(url, headers=headers, data=ujson.dumps(body)) as resp:
+                    pass
+        except aiohttp.ClientConnectionError as e:
+            msg = 'Error making request %s. Reason: %s'
+            logger.error(msg, url, str(e))
+
+
 
 class HelpscoutSDK(object):
 
@@ -53,3 +77,7 @@ class HelpscoutSDK(object):
             i += 1
 
         return mailboxes[i] if found else {}
+
+    async def change_mailbox(self, conversation_id, mailbox_id):
+
+            await self._hs_api.change_mailbox(conversation_id, mailbox_id)
