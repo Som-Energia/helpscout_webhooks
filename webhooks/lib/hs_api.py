@@ -32,7 +32,7 @@ class HelpscoutAPI(object):
         try:
             async with aiohttp.ClientSession(raise_for_status=True) as session:
                 async with session.get(url, headers=headers) as resp:
-                    return await resp.json().get('_embedded', [])
+                    return (await resp.json()).get('_embedded', {}).get('mailboxes', [])
         except aiohttp.ClientConnectionError as e:
             msg = 'Error making request %s. Reason: %s'
             logger.error(msg, url, str(e))
@@ -73,8 +73,10 @@ class HelpscoutSDK(object):
 
         mailboxes = await self._hs_api.mailboxes()
         while not found and i < len(mailboxes):
-            found = name == mailboxes[i].get('name', '')
-            i += 1
+            if name == mailboxes[i].get('name', ''):
+                found = True
+            else:
+                i += 1
 
         return mailboxes[i] if found else {}
 
