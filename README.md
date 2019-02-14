@@ -1,5 +1,15 @@
 # Installation & Usage
 
+## Install pipenv
+```bash
+sudo -H pip install pipenv
+```
+
+## Install project dependencies
+```bash
+pipenv install
+```
+
 ## Run server
 ```bash
 pipenv run python run.py
