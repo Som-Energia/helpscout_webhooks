@@ -15,3 +15,6 @@ database:
 # SQL Params
 sql:
   sql_query: sql_param
+
+# Other Params
+domain_exception: '@mydomain.com'

@@ -47,6 +47,7 @@ class dbUtils(object):
     def __init__(self):
         self.energetica_emails = []
         self.sql_attributes = settings.SQL
+        self.domain_exception = settings.DOMAIN_EXCEPTION
 
     def get_energetica_emails(self):
         return self.energetica_emails
@@ -59,5 +60,8 @@ class dbUtils(object):
         query = query.format(self.sql_attributes['energetica_emails'])
         with self.db.cursor() as cursor:
             cursor.execute(query)
-            emails = cursor.fetchone()
-        self.energetica_emails = emails
+            emails = cursor.fetchall()
+        self.energetica_emails = set([
+            elem[0] for elem in emails
+            if self.domain_exception not in elem[0]
+        ])

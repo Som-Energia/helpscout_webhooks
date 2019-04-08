@@ -28,6 +28,8 @@ SQL = {
     'energetica_emails': config['sql']['energetica_emails']
 }
 
+DOMAIN_EXCEPTION = config['domain_exception']
+
 TOKEN_TIME_REFRESH = 110
 
 LOGGING = {

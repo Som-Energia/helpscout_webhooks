@@ -22,7 +22,7 @@ async def check_signature(request):
         'sha1'
     ).digest()).strip().decode()
 
-    hs_signature = request.headers['x-helpscout-signature']
+    hs_signature = request.headers.get('x-helpscout-signature', '')
 
     if request_signature != hs_signature:
         return response.json({'error': 'Unauthorized'}, status=401)

@@ -42,7 +42,7 @@ if __name__ == "__main__":
         "-H", "--host",
         help="host address to serve (default: %(default)r",
         type=str,
-        default="localhost"
+        default="0.0.0.0"
     )
 
     parser.add_argument(

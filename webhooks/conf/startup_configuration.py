@@ -1,4 +1,6 @@
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.triggers.cron import CronTrigger
+
 from datetime import datetime
 from sanic import Sanic
 
@@ -27,7 +29,7 @@ async def build_app(loop):
     )
     app.scheduler.add_job(
         app.dbUtils.refresh_local_email_list,
-        'interval',
+        CronTrigger(hour=0),
         minutes=settings.TOKEN_TIME_REFRESH,
         max_instances=1,
         next_run_time=datetime.now(),
