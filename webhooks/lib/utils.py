@@ -65,7 +65,7 @@ class dbUtils(object):
 
         with psycopg2.connect(**settings.DATABASE) as db_conn:
             with db_conn.cursor() as cursor:
-                cursor.execute(query_str, self.sql_attributes['energetica_emails'])
+                cursor.execute(query_str, (self.sql_attributes['energetica_emails'],))
                 emails = cursor.fetchall()
 
         self.energetica_emails = set([
