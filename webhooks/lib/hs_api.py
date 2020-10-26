@@ -84,5 +84,4 @@ class HelpscoutSDK(object):
         return mailboxes[i] if found else {}
 
     async def change_mailbox(self, conversation_id, mailbox_id):
-
-            await self._hs_api.change_mailbox(conversation_id, mailbox_id)
+        await self._hs_api.change_mailbox(conversation_id, mailbox_id)
