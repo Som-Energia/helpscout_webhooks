@@ -30,12 +30,19 @@ async def check_signature(request):
 
 @labeler.route("/", methods=['POST'])
 async def labelhook(request):
-    hsApi = request.app.hsApi
-
-    body = request.json
-    energetica_emails = request.app.dbUtils.get_energetica_emails()
-    if body['customer']['email'] in energetica_emails:
-        mailbox_id = await hsApi.get_mailbox('Energética Coop')
-        await hsApi.change_mailbox(body['id'], mailbox_id['id'])
+    request.app.loop.create_task(asign_energetica_label(request.app, request.json))
 
     return response.json({}, status=200)
+
+
+async def asign_energetica_label(app, body):
+    logger.info('Energetica labeler task triggered')
+    energetica_emails = app.dbUtils.get_energetica_emails()
+    if body.get('customer', {}).get('email', '') in energetica_emails:
+        msg = 'Moving conversation [%s] from [%s] to Energetica mailbox'
+        logger.info(msg, body.get('subject'), body['customer']['email'])
+
+        mailbox_id = await app.hsApi.get_mailbox('Energética Coop')
+        await app.hsApi.change_mailbox(body['id'], mailbox_id['id'])
+
+    logger.info('Energetica labeler task ended')
