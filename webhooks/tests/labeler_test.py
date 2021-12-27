@@ -21,7 +21,7 @@ class LabelerTest(unittest.TestCase):
 
     def test__you_can_not_pass(self):
         body = {
-            'customer': {'email': 'example@example.com'},
+            'primaryCustomer': {'email': 'example@example.com'},
             'id': 1234
         }
 
@@ -34,7 +34,7 @@ class LabelerTest(unittest.TestCase):
     @mock.patch('webhooks.lib.hs_api.HelpscoutSDK.get_mailbox', new=AsyncMock(return_value={'id': 5001}))
     def test__energetica_mail(self):
         body = {
-            'customer': {'email': 'example@example.com'},
+            'primaryCustomer': {'email': 'example@example.com'},
             'id': 1234
         }
         app.dbUtils.get_energetica_emails = MagicMock(
@@ -42,16 +42,16 @@ class LabelerTest(unittest.TestCase):
         )
         app.hsApi.change_mailbox = AsyncMock()
 
-        app.test_client.post(
+        request, response = app.test_client.post(
             '/energetica_labeler',
             data=json.dumps(body),
-            headers={'x-helpscout-signature': 'OVdmCjJeaW/zzSP/A5T/Y9XXxWY='}
+            headers={'x-helpscout-signature': '6SVvUvPXh2WwSvkFq8pMogPRHfE='}
         )
         app.hsApi.change_mailbox.mock.assert_called_once_with(1234, 5001)
 
     def test__no_energetica_mail(self):
         body = {
-            'customer': {'email': 'example@example.com'},
+            'primaryCustomer': {'email': 'example@example.com'},
             'id': 1234
         }
         app.dbUtils.get_energetica_emails = MagicMock(
@@ -63,7 +63,7 @@ class LabelerTest(unittest.TestCase):
         request, response = app.test_client.post(
             '/energetica_labeler',
             data=json.dumps(body),
-            headers={'x-helpscout-signature': 'OVdmCjJeaW/zzSP/A5T/Y9XXxWY='}
+            headers={'x-helpscout-signature': '6SVvUvPXh2WwSvkFq8pMogPRHfE='}
         )
 
         self.assertEqual(200, response.status)
