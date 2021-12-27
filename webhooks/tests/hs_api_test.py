@@ -17,7 +17,7 @@ class HelpscoutSDKTest(VCRTestCase):
             hs_sdk._hs_api.token_renew.renew_token(hs_sdk._hs_api.token_renew)
         )
         loop.run_until_complete(
-            hs_sdk.change_mailbox(756647228, 93840)
+            hs_sdk.change_mailbox(762899217, 93840)
         )
 
         self.assertEqual(len(self.cassette), 2)
@@ -52,7 +52,7 @@ class HelpscoutAPITest(VCRTestCase):
             hs_api.token_renew.renew_token(hs_api.token_renew)
         )
         loop.run_until_complete(
-            hs_api.change_mailbox(756647228, 93840)
+            hs_api.change_mailbox(762899217, 93840)
         )
 
         self.assertEqual(len(self.cassette), 2)
