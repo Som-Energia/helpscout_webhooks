@@ -38,9 +38,9 @@ async def labelhook(request):
 async def asign_energetica_label(app, body):
     logger.info('Energetica labeler task triggered')
     energetica_emails = app.dbUtils.get_energetica_emails()
-    if body.get('customer', {}).get('email', '') in energetica_emails:
+    if body.get('primaryCustomer', {}).get('email', '') in energetica_emails:
         msg = 'Moving conversation [%s] from [%s] to Energetica mailbox'
-        logger.info(msg, body.get('subject'), body['customer']['email'])
+        logger.info(msg, body.get('subject'), body['primaryCustomer']['email'])
 
         mailbox_id = await app.hsApi.get_mailbox('Energética Coop')
         await app.hsApi.change_mailbox(body['id'], mailbox_id['id'])
