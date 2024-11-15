@@ -3,8 +3,11 @@ import asyncio
 import logging
 import sys
 
+from webhooks.lib.hs_api import HelpscoutSDK
+from webhooks.lib.fs_api import FreescoutSDK
+from webhooks.conf import settings
 
-logger = logging.getLogger('hs_webhook')
+logger = logging.getLogger('scout_webhook')
 
 
 def main(host, port):
@@ -12,31 +15,37 @@ def main(host, port):
 
     loop = asyncio.get_event_loop()
 
-    try:
-        app = loop.run_until_complete(build_app(loop))
+    for scout in settings.SCOUTS:
+        if scout == 'helpscout':
+            sdk = HelpscoutSDK()
+        if scout == 'freescout':
+            sdk = FreescoutSDK()
 
-        logger.info("Running background tasks... ")
-        app.scheduler.start()
+        try:
+            app = loop.run_until_complete(build_app(loop, sdk))
 
-        logger.info("Running helpscout webhooks... ")
-        server = app.create_server(host, port)
-        task = loop.create_task(server)
-        loop.run_forever()
-    except (KeyboardInterrupt, SystemExit):
-        logger.info("You kill me!!")
-    except Exception as e:
-        msg = "An uncontroled exception raised!!: %s"
-        logger.exception(msg, str(e))
-    finally:
-        logger.info("Stopping helpscout webhooks :(")
-        task.cancel()
-        app.scheduler.shutdown()
-        loop.close()
-        sys.exit(0)
+            logger.info("Running {} background tasks... ".format(scout))
+            app.scheduler.start()
+
+            logger.info("Running {} webhooks... ".format(scout))
+            server = app.create_server(host, port)
+            task = loop.create_task(server)
+            loop.run_forever()
+        except (KeyboardInterrupt, SystemExit):
+            logger.info("You kill {}!!".format(scout))
+        except Exception as e:
+            msg = "An uncontroled exception raised in {}!!: %s".format(scout)
+            logger.exception(msg, str(e))
+        finally:
+            logger.info("Stopping {} webhooks :(".format(scout))
+            task.cancel()
+            app.scheduler.shutdown()
+            loop.close()
+            sys.exit(0)
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Helpscout webhook service")
+    parser = argparse.ArgumentParser(description="Scout webhook service")
 
     parser.add_argument(
         "-H", "--host",
@@ -55,3 +64,5 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     main(args.host, args.port)
+
+

@@ -3,6 +3,16 @@ helpscout:
   client_id: client_id
   client_secret: client_secret
   secret_key: secret_key
+  host: host
+  webhook_signature: signature
+
+# Freescout api credentials and webhook screet key
+freescout:
+  host: host
+  api_key: api_key
+  secret_key: secret_key
+  webhook_signature: signature
+  admin_user_id: admin_user_id
 
 # Database configuration
 database:
