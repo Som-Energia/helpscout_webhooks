@@ -33,7 +33,7 @@ async def check_signature(request):
 async def labelhook(request):
     request.app.loop.create_task(asign_energetica_label(request.app, request.json))
     return response.json({}, status=200)
-
+    
 labeler_fs = Blueprint(energetica_labeler, url_prefix="/{}".format(energetica_labeler))
 
 @labeler_fs.middleware('request')
