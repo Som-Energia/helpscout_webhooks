@@ -11,7 +11,7 @@ class FreescoutSDKTest(VCRTestCase):
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         fs_sdk = FreescoutSDK()
-        target_mailbox = "Demo Mailbox"
+        target_mailbox = "Prova ITthon"  # TODO: Feble?
         mailbox = loop.run_until_complete(
             fs_sdk.get_mailbox(target_mailbox)    
         )
@@ -39,7 +39,7 @@ class FreescoutAPITest(VCRTestCase):
         hs_api = FreescoutAPI(settings.FREESCOUT_HOST)
 
         loop.run_until_complete(
-            hs_api.change_mailbox(11, 3)
+            hs_api.change_mailbox(28323, 3)  # TODO: Primera vegada molt bé, després ja no té sentit l'assert
         )
         
         self.assertEqual(self.cassette.responses[0]['status']['code'], 204)

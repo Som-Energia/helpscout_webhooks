@@ -20,7 +20,6 @@ class FreescoutAPI(object):
             "Content-Type": "application/json; charset=UTF-8",
         }
 
-        import pdb; pdb.set_trace()
         url = urljoin(settings.FREESCOUT_HOST, '/api/mailboxes')
         try:
             async with aiohttp.ClientSession(raise_for_status=True) as session:

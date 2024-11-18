@@ -22,7 +22,7 @@ def start_app():
         app = loop.run_until_complete(build_app(loop, sdk))
 
         logger.info("Running background tasks... ")
-        app.ctx.scheduler.start()
+        app.scheduler.start()
 
         return app
 

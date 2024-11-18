@@ -22,7 +22,7 @@ class FreescoutLabelerTest(unittest.TestCase):
 
     def test__you_can_not_pass(self):
         body = {
-            'primaryCustomer': {'email': 'example@example.com'},
+            'customer': {'email': 'example@example.com'},
             'id': 1234
         }
 
@@ -35,32 +35,32 @@ class FreescoutLabelerTest(unittest.TestCase):
     @mock.patch('webhooks.lib.fs_api.FreescoutSDK.get_mailbox', new=AsyncMock(return_value={'id': 5001}))
     def test__energetica_mail(self):
         body = {
-            'primaryCustomer': {'email': 'example@example.com'},
+            'customer': {'email': 'example@example.com'},
             'id': 1234
         }
-        app.ctx.dbUtils.get_energetica_emails = MagicMock(
+        app.dbUtils.get_energetica_emails = MagicMock(
             return_value=['example@example.com']
         )
 
-        app.ctx.scoutApi.change_mailbox = AsyncMock()
+        app.scoutApi.change_mailbox = AsyncMock()
 
         request, response = app.test_client.post(
             '/energetica_labeler',
             data=json.dumps(body),
             headers={'x-freescout-signature': settings.FREESCOUT_WEBHOOK_SIGNATURE}
         )
-        app.ctx.scoutApi.change_mailbox.mock.assert_called_once_with(1234, 5001)
+        app.scoutApi.change_mailbox.mock.assert_called_once_with(1234, 5001)
 
-    def test__no_energetica_mail(self):
+    def test__no_energetica_mail(self):  # TODO: Documentar com ho hem fet? Pot ser una mica triqui?
         body = {
-            'primaryCustomer': {'email': 'example@example.com'},
+            'customer': {'email': 'example@example.com'},
             'id': 1234
         }
-        app.ctx.dbUtils.get_energetica_emails = MagicMock(
+        app.dbUtils.get_energetica_emails = MagicMock(
             return_value=['diferent@example.com']
         )
 
-        app.ctx.scoutApi.get_mailbox = MagicMock()
+        app.scoutApi.get_mailbox = MagicMock()
 
         request, response = app.test_client.post(
             '/energetica_labeler',
@@ -68,5 +68,5 @@ class FreescoutLabelerTest(unittest.TestCase):
             headers={'x-freescout-signature': settings.FREESCOUT_WEBHOOK_SIGNATURE}
         )
 
-        app.ctx.scoutApi.get_mailbox.assert_not_called()
+        app.scoutApi.get_mailbox.assert_not_called()
         self.assertEqual(200, response.status)
