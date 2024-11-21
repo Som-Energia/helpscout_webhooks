@@ -11,19 +11,12 @@ logger = logging.getLogger('scout_webhook')
 
 
 def start_app():
+    loop = asyncio.get_event_loop()
+    app = loop.run_until_complete(build_app(loop, FreescoutSDK()))
 
-    for scout in settings.SCOUTS:
-        if scout == 'helpscout':
-            sdk = HelpscoutSDK()
-        if scout == 'freescout':
-            sdk = FreescoutSDK()
+    logger.info("Running background tasks... ")
+    app.scheduler.start()
 
-        loop = asyncio.get_event_loop()
-        app = loop.run_until_complete(build_app(loop, sdk))
-
-        logger.info("Running background tasks... ")
-        app.scheduler.start()
-
-        return app
+    return app
 
 app = start_app()
