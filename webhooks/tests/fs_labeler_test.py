@@ -4,6 +4,7 @@ import json
 import unittest
 from unittest import mock
 from unittest.mock import MagicMock
+from webhooks.conf import settings
 
 
 def AsyncMock(*args, **kwargs):
@@ -17,54 +18,55 @@ def AsyncMock(*args, **kwargs):
     return mock_coro
 
 
-class LabelerTest(unittest.TestCase):
+class FreescoutLabelerTest(unittest.TestCase):
 
     def test__you_can_not_pass(self):
         body = {
-            'primaryCustomer': {'email': 'example@example.com'},
+            'customer': {'email': 'example@example.com'},
             'id': 1234
         }
 
-        app.test_client.post(
+        request, response = app.test_client.post(
             '/energetica_labeler',
             data=json.dumps(body),
-            headers={'x-helpscout-signature': 'OVdmCjJeaW/zzSP/A5T/Y9XXxWY='}
+            headers={'x-freescout-signature': 'wrongsignature'}
         )
 
-    @mock.patch('webhooks.lib.hs_api.HelpscoutSDK.get_mailbox', new=AsyncMock(return_value={'id': 5001}))
+    @mock.patch('webhooks.lib.fs_api.FreescoutSDK.get_mailbox', new=AsyncMock(return_value={'id': 5001}))
     def test__energetica_mail(self):
         body = {
-            'primaryCustomer': {'email': 'example@example.com'},
+            'customer': {'email': 'example@example.com'},
             'id': 1234
         }
         app.dbUtils.get_energetica_emails = MagicMock(
             return_value=['example@example.com']
         )
-        app.hsApi.change_mailbox = AsyncMock()
+
+        app.scoutApi.change_mailbox = AsyncMock()
 
         request, response = app.test_client.post(
             '/energetica_labeler',
             data=json.dumps(body),
-            headers={'x-helpscout-signature': '6SVvUvPXh2WwSvkFq8pMogPRHfE='}
+            headers={'x-freescout-signature': settings.FREESCOUT_WEBHOOK_SIGNATURE}
         )
-        app.hsApi.change_mailbox.mock.assert_called_once_with(1234, 5001)
+        app.scoutApi.change_mailbox.mock.assert_called_once_with(1234, 5001)
 
-    def test__no_energetica_mail(self):
+    def test__no_energetica_mail(self):  # TODO: Documentar com ho hem fet? Pot ser una mica triqui?
         body = {
-            'primaryCustomer': {'email': 'example@example.com'},
+            'customer': {'email': 'example@example.com'},
             'id': 1234
         }
         app.dbUtils.get_energetica_emails = MagicMock(
             return_value=['diferent@example.com']
         )
 
-        app.hsApi.get_mailbox = MagicMock()
+        app.scoutApi.get_mailbox = MagicMock()
 
         request, response = app.test_client.post(
             '/energetica_labeler',
             data=json.dumps(body),
-            headers={'x-helpscout-signature': '6SVvUvPXh2WwSvkFq8pMogPRHfE='}
+            headers={'x-freescout-signature': settings.FREESCOUT_WEBHOOK_SIGNATURE}
         )
 
+        app.scoutApi.get_mailbox.assert_not_called()
         self.assertEqual(200, response.status)
-        app.hsApi.get_mailbox.assert_not_called()

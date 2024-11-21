@@ -7,7 +7,7 @@ import psycopg2
 
 from webhooks.conf import settings
 
-logger = logging.getLogger('hs_webhook')
+logger = logging.getLogger('scout_webhook')
 
 
 def relative(path):

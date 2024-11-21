@@ -7,14 +7,23 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fil
 with open(os.path.join(BASE_DIR, 'webhooks/conf/config.yaml')) as f:
     config = yaml.load(f.read(), Loader=yaml.FullLoader)
 
+SCOUTS = config['scouts']
 
-HELPSCOUT_HOST = 'https://api.helpscout.net'
+#freescout
+FREESCOUT_HOST = config['freescout']['host']
+FREESCOUT_API_KEY = config['freescout']['api_key']
+FREESCOUT_ADMIN_USER_ID = config['freescout']['admin_user_id']
+FREESCOUT_WEBHOOK_SIGNATURE = config['freescout']['webhook_signature']
+FREESCOUT_SECRET_KEY = config['freescout']['secret_key']
+
+#helpscout
+HELPSCOUT_HOST = config['helpscout']['host']
 
 CLIENT_ID = config['helpscout']['client_id']
 CLIENT_SECRET = config['helpscout']['client_secret']
 
-
 SECRET_KEY = config['helpscout']['secret_key']
+HELPSCOUT_WEBHOOK_SIGNATURE = config['helpscout']['webhook_signature']
 
 DATABASE = {
     'database': config['database']['name'],
@@ -65,7 +74,7 @@ LOGGING = {
             'level': 'INFO',
             'propagate': True,
         },
-        'hs_webhook': {
+        'scout_webhook': {
             'handlers': ['console', 'file'],
             'level': 'INFO',
             'propagate': True,
