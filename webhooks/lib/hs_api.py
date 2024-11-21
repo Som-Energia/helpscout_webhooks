@@ -8,7 +8,7 @@ from webhooks.conf import settings
 from .utils import TokenRenew
 
 
-logger = logging.getLogger('hs_api')
+logger = logging.getLogger('scout_webhook')
 
 
 class HelpscoutAPI(object):

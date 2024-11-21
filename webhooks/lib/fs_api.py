@@ -5,7 +5,7 @@ import aiohttp
 
 from webhooks.conf import settings
 
-logger = logging.getLogger('fs_api')
+logger = logging.getLogger('scout_webhook')
 
 
 class FreescoutAPI(object):
