@@ -1,7 +1,7 @@
 
 # Changelog
 
-## Unreleased 
+## v3.0.0 
 - Change helpscout to freescout.
 
 ## v2.0.0
